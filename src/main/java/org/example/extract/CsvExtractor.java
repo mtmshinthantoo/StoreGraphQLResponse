@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public final class CsvExtractor {
+    private record RowState(JsonValue context, Map<String, String> values) {
+    }
+
     public String extract(ShopifyCsvExportDefinition definition) {
         JsonValue response = JsonParser.parse(definition.apiResponse());
         CsvExportConfig config = definition.config();
@@ -43,34 +46,34 @@ public final class CsvExtractor {
             return List.of(parentValues);
         }
 
-        List<Map<String, String>> rows = new ArrayList<>();
-        rows.add(parentValues);
+        List<RowState> rows = new ArrayList<>();
+        rows.add(new RowState(rootRow, parentValues));
 
         for (RowExplosion explosion : config.rowExplosions()) {
-            List<Map<String, String>> nextRows = new ArrayList<>();
-            List<JsonValue> children = JsonPath.findMany(rootRow, explosion.path());
+            List<RowState> nextRows = new ArrayList<>();
 
-            for (Map<String, String> existingRow : rows) {
+            for (RowState existingRow : rows) {
+                List<JsonValue> children = JsonPath.findMany(existingRow.context(), explosion.path());
                 if (children.isEmpty()) {
                     if (explosion.emptyBehavior() == EmptyExplosionBehavior.SKIP_ROW) {
                         continue;
                     }
-                    Map<String, String> rowWithBlankChildColumns = new LinkedHashMap<>(existingRow);
+                    Map<String, String> rowWithBlankChildColumns = new LinkedHashMap<>(existingRow.values());
                     explosion.columns().forEach(column -> rowWithBlankChildColumns.put(column.columnName(), ""));
-                    nextRows.add(rowWithBlankChildColumns);
+                    nextRows.add(new RowState(existingRow.context(), rowWithBlankChildColumns));
                     continue;
                 }
 
                 for (JsonValue child : children) {
-                    Map<String, String> explodedRow = new LinkedHashMap<>(existingRow);
+                    Map<String, String> explodedRow = new LinkedHashMap<>(existingRow.values());
                     explodedRow.putAll(extractColumns(child, explosion.columns()));
-                    nextRows.add(explodedRow);
+                    nextRows.add(new RowState(child, explodedRow));
                 }
             }
             rows = nextRows;
         }
 
-        return rows;
+        return rows.stream().map(RowState::values).toList();
     }
 
     private Map<String, String> extractColumns(JsonValue row, List<ColumnMapping> columns) {

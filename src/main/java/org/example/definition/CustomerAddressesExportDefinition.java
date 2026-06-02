@@ -6,12 +6,12 @@ import static org.example.extract.Extractors.value;
 
 public final class CustomerAddressesExportDefinition implements ShopifyCsvExportDefinition {
     @Override
-    public String exportName(){
-    return "CustomerAddresses";
+    public String exportName() {
+        return "CustomerAddresses";
     }
 
     @Override
-    public String apiResponse(){
+    public String apiResponse() {
         return """
                 {
                     "data": {
@@ -91,7 +91,7 @@ public final class CustomerAddressesExportDefinition implements ShopifyCsvExport
     }
 
     @Override
-    public CsvExportConfig config(){
+    public CsvExportConfig config() {
         return CsvExportConfig.builder()
                 .rootRows("data.customers.edges")
                 .addColumn("Customer Id", value("node.id"))

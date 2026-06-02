@@ -1,6 +1,12 @@
 package org.example.registry;
 
-import org.example.definition.*;
+import org.example.definition.ArticleExportDefinition;
+import org.example.definition.CustomerAddressesExportDefinition;
+import org.example.definition.OrderDiscountCodesExportDefinition;
+import org.example.definition.OrderItemDiscountAllocationsExportDefinition;
+import org.example.definition.OrdersItemsExportDefinition;
+import org.example.definition.ProductExportDefinition;
+import org.example.definition.ShopifyCsvExportDefinition;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,13 +20,11 @@ public final class ShopifyExportRegistry {
         Map<String, ShopifyCsvExportDefinition> definitions = new LinkedHashMap<>();
         register(definitions, new ProductExportDefinition());
         register(definitions, new ArticleExportDefinition());
-        registerAlias(definitions, "Atricles", "Articles");
         register(definitions, new OrderDiscountCodesExportDefinition());
-        registerAlias(definitions, "OrderDiscountCoeds", "OrderDiscountCodes");
-        registerAlias(definitions, "OrderDiscountCode", "OrderDiscountCodes");
         register(definitions, new OrdersItemsExportDefinition());
-        registerAlias(definitions, "OrderItems", "OrdersItems");
         register(definitions, new CustomerAddressesExportDefinition());
+        register(definitions, new OrderItemDiscountAllocationsExportDefinition());
+        registerAliases(definitions);
         return Collections.unmodifiableMap(definitions);
     }
 
@@ -40,5 +44,14 @@ public final class ShopifyExportRegistry {
             throw new IllegalStateException("Cannot register alias for unknown export: " + exportName);
         }
         definitions.put(alias, definition);
+    }
+
+    private static void registerAliases(Map<String, ShopifyCsvExportDefinition> definitions) {
+        registerAlias(definitions, "Atricles", "Articles");
+        registerAlias(definitions, "OrderDiscountCoeds", "OrderDiscountCodes");
+        registerAlias(definitions, "OrderDiscountCode", "OrderDiscountCodes");
+        registerAlias(definitions, "OrderItems", "OrdersItems");
+        registerAlias(definitions, "OrderItemDIscountAllocations", "OrderItemDiscountAllocations");
+        registerAlias(definitions, "OrderItemDiscountAllocation", "OrderItemDiscountAllocations");
     }
 }
