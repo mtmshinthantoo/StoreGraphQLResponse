@@ -1,10 +1,6 @@
 package org.example.registry;
 
-import org.example.definition.ArticleExportDefinition;
-import org.example.definition.OrderDiscountCodesExportDefinition;
-import org.example.definition.OrdersItemsExportDefinition;
-import org.example.definition.ProductExportDefinition;
-import org.example.definition.ShopifyCsvExportDefinition;
+import org.example.definition.*;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,6 +20,7 @@ public final class ShopifyExportRegistry {
         registerAlias(definitions, "OrderDiscountCode", "OrderDiscountCodes");
         register(definitions, new OrdersItemsExportDefinition());
         registerAlias(definitions, "OrderItems", "OrdersItems");
+        register(definitions, new CustomerAddressesExportDefinition());
         return Collections.unmodifiableMap(definitions);
     }
 

@@ -9,7 +9,7 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) {
         Map<String, ShopifyCsvExportDefinition> definitions = ShopifyExportRegistry.defaultDefinitions();
-        String exportName = args.length == 0 ? "OrderItems" : args[0];
+        String exportName = args.length == 0 ? "CustomerAddresses" : args[0];
         ShopifyCsvExportDefinition definition = findDefinition(definitions, exportName);
 
         if (definition == null) {
